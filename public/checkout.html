@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Checkout</title>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+  <header class="topbar">
+    <a href="cart.html" class="link">← Cart</a>
+    <h2>Checkout</h2>
+  </header>
+
+  <main class="checkout">
+    <form id="checkoutForm">
+      <label>Name</label>
+      <input required type="text"/>
+
+      <label>Address</label>
+      <input required type="text"/>
+
+      <label>Card Number</label>
+      <input required type="text" minlength="16" maxlength="16"/>
+
+      <button class="btn">Place order</button>
+    </form>
+    <p id="msg"></p>
+  </main>
+
+  <script>
+    document.getElementById("checkoutForm").onsubmit = (e) => {
+      e.preventDefault();
+      document.getElementById("msg").textContent = "Order placed! (demo)";
+    };
+  </script>
+</body>
+</html>
+
