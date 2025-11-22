@@ -1,7 +1,7 @@
 const sqlite3 = require("sqlite3").verbose();
 const db = new sqlite3.Database("./ecommerce.db");
 
-// cria tabelas
+// cria tabelas e faz seed
 db.serialize(() => {
   db.run(`
     CREATE TABLE IF NOT EXISTS products (
@@ -25,6 +25,11 @@ db.serialize(() => {
 
   // seed (só insere se vazio)
   db.get("SELECT COUNT(*) as count FROM products", (err, row) => {
+    if (err) {
+      console.error("Error checking products table:", err.message);
+      return;
+    }
+
     if (row.count === 0) {
       const insert = db.prepare(
         "INSERT INTO products (name, description, price, image, category) VALUES (?, ?, ?, ?, ?)"
@@ -34,47 +39,57 @@ db.serialize(() => {
         "Wireless Headphones",
         "Premium wireless headphones with noise cancellation",
         79.99,
-        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&h=400&fit=crop",
+        "/image/headphone.png",
         "Electronics"
       );
+
       insert.run(
         "Smart Watch",
         "Fitness tracking smart watch with heart rate monitor",
         199.99,
-        "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&h=400&fit=crop",
+        "/image/smartwatch.png",
         "Electronics"
       );
+
       insert.run(
         "Laptop Stand",
         "Ergonomic aluminum laptop stand",
         45.99,
-        "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=600&h=400&fit=crop",
+        "/image/stand.png",
         "Accessories"
       );
+
       insert.run(
         "Mechanical Keyboard",
         "RGB mechanical gaming keyboard",
         129.99,
-        "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=600&h=400&fit=crop",
+        "/image/teclado.png",
         "Electronics"
       );
+
       insert.run(
         "Wireless Mouse",
         "Ergonomic wireless mouse with precision tracking",
         39.99,
-        "https://images.unsplash.com/photo-1527814050087-3793815479db?w=600&h=400&fit=crop",
+        "/image/mouse.png",
         "Electronics"
       );
+
       insert.run(
         "USB-C Hub",
         "Multi-port USB-C hub with 4K HDMI support",
         59.99,
-        "https://images.unsplash.com/photo-1625948515291-69613efd103f?w=600&h=400&fit=crop",
+        "/image/usb.png",
         "Accessories"
       );
 
-      insert.finalize();
-      console.log("Seed products inserted.");
+      insert.finalize((finalizeErr) => {
+        if (finalizeErr) {
+          console.error("Error finalizing insert:", finalizeErr.message);
+        } else {
+          console.log("Seed products inserted.");
+        }
+      });
     }
   });
 });
