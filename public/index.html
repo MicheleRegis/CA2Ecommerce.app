@@ -3,20 +3,48 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CA2 Shop</title>
+  <title>Fynko</title>
   <link rel="stylesheet" href="styles.css"/>
 </head>
 <body>
+  <!-- Header -->
   <header class="topbar">
-    <h1>CA2 Shop</h1>
-    <a href="cart.html" class="link">🛒 Cart</a>
+    <div class="brand">
+      <span class="logo">🛍️</span>
+      <h1 class="brand-title">Fynko</h1>
+    </div>
+
+    <nav class="nav">
+      <button class="nav-btn active" onclick="location.href='index.html'">
+        Products
+      </button>
+
+      <button id="cartBtn" class="nav-btn cart-btn" onclick="location.href='cart.html'">
+        Cart
+        <span id="cartBadge" class="badge hidden">0</span>
+      </button>
+    </nav>
   </header>
 
-  <main>
+  <!-- Main -->
+  <main class="container">
+    <!-- Search / Filter / Update prices -->
+    <section class="toolbar">
+      <input id="searchInput" type="text" placeholder="Search products..." />
+      <div id="categoryWrap" class="categories"></div>
+      <button id="updatePricesBtn" class="btn green">Update Prices</button>
+    </section>
+
+    <!-- Products Grid -->
     <section id="product-list" class="grid"></section>
   </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>© 2025 Fynko - Full Stack E-Commerce Demo</p>
+    <p class="footer-sub">Built with Node, SQLite, JavaScript</p>
+  </footer>
 
   <script src="app.js"></script>
 </body>
 </html>
-

@@ -3,37 +3,36 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Checkout</title>
+  <title>Fynko - Checkout</title>
   <link rel="stylesheet" href="styles.css"/>
 </head>
 <body>
   <header class="topbar">
-    <a href="cart.html" class="link">← Cart</a>
-    <h2>Checkout</h2>
+    <div class="brand">
+      <span class="logo">🛍️</span>
+      <h1 class="brand-title">Fynko</h1>
+    </div>
+    <nav class="nav">
+      <button class="nav-btn" onclick="location.href='index.html'">Products</button>
+      <button class="nav-btn cart-btn" onclick="location.href='cart.html'">
+        Cart <span id="cartBadge" class="badge hidden">0</span>
+      </button>
+    </nav>
   </header>
 
-  <main class="checkout">
-    <form id="checkoutForm">
-      <label>Name</label>
-      <input required type="text"/>
+  <main class="container">
+    <h2>Checkout</h2>
 
-      <label>Address</label>
-      <input required type="text"/>
-
-      <label>Card Number</label>
-      <input required type="text" minlength="16" maxlength="16"/>
-
-      <button class="btn">Place order</button>
+    <form id="checkout-form" class="checkout-form">
+      <input required name="fullName" placeholder="Full name"/>
+      <input required name="address" placeholder="Address"/>
+      <input required name="card" placeholder="Card number"/>
+      <button class="btn" type="submit">Place Order</button>
     </form>
-    <p id="msg"></p>
+
+    <p id="checkout-message"></p>
   </main>
 
-  <script>
-    document.getElementById("checkoutForm").onsubmit = (e) => {
-      e.preventDefault();
-      document.getElementById("msg").textContent = "Order placed! (demo)";
-    };
-  </script>
+  <script src="app.js"></script>
 </body>
 </html>
-

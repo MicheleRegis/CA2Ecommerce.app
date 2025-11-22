@@ -1,31 +1,91 @@
 function $(id){ return document.getElementById(id); }
 function getParams(){ return new URLSearchParams(window.location.search); }
 
+let allProducts = [];
+let selectedCategory = "All";
+let searchTerm = "";
+
 // HOME
 async function loadProductsList(){
   const res = await fetch("/api/products");
-  const products = await res.json();
+  allProducts = await res.json();
 
+  renderCategories();
+  renderProducts();
+  updateCartBadge();
+}
+
+function renderProducts(){
   const list = $("product-list");
   if (!list) return;
 
+  const filtered = allProducts.filter(p => {
+    const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCat = selectedCategory === "All" || (p.category || "").toLowerCase() === selectedCategory.toLowerCase();
+    return matchesSearch && matchesCat;
+  });
+
   list.innerHTML = "";
-  products.forEach(p => {
+  filtered.forEach(p => {
     const card = document.createElement("div");
     card.className = "card";
     card.innerHTML = `
       <img src="${p.image}" alt="${p.name}">
-      <h3>${p.name}</h3>
-      <p>€${p.price.toFixed(2)}</p>
-      <a class="btn" href="products.html?id=${p.id}">View</a>
-      <button class="btn add" data-id="${p.id}">Add to cart</button>
+      <div class="p-16">
+        <div style="display:flex; justify-content:space-between; align-items:start; gap:8px;">
+          <h3>${p.name}</h3>
+          ${p.category ? `<span style="font-size:11px;background:#ede9fe;color:#5b21b6;padding:2px 6px;border-radius:999px">${p.category}</span>` : ""}
+        </div>
+        <p>${p.description || ""}</p>
+        <p class="price">€${p.price.toFixed(2)}</p>
+        <div style="display:flex; gap:8px; margin-top:10px;">
+          <a class="btn" style="flex:1; text-align:center;" href="products.html?id=${p.id}">View</a>
+          <button class="btn" style="flex:1;" data-id="${p.id}">Add</button>
+        </div>
+      </div>
     `;
     list.appendChild(card);
   });
 
-  document.querySelectorAll(".add").forEach(btn => {
-    btn.onclick = () => addItem(btn.dataset.id, 1);
+  list.querySelectorAll("button.btn").forEach(btn=>{
+    btn.onclick = ()=> addItem(btn.dataset.id, 1);
   });
+}
+
+function renderCategories(){
+  const wrap = $("categoryWrap");
+  if (!wrap) return;
+
+  const cats = ["All", ...new Set(allProducts.map(p => p.category).filter(Boolean))];
+
+  wrap.innerHTML = "";
+  cats.forEach(c=>{
+    const b = document.createElement("button");
+    b.className = "cat" + (c===selectedCategory ? " active":"");
+    b.textContent = c;
+    b.onclick = ()=>{
+      selectedCategory = c;
+      renderCategories();
+      renderProducts();
+    };
+    wrap.appendChild(b);
+  });
+
+  const searchInput = $("searchInput");
+  if (searchInput) {
+    searchInput.oninput = (e)=>{
+      searchTerm = e.target.value;
+      renderProducts();
+    };
+  }
+
+  const updateBtn = $("updatePricesBtn");
+  if (updateBtn) {
+    updateBtn.onclick = async ()=>{
+      await loadProductsList();
+      alert("Prices updated!");
+    };
+  }
 }
 
 // DETALHE
@@ -42,7 +102,7 @@ async function loadProductDetail(){
       <img src="${p.image}" alt="${p.name}">
       <div>
         <h2>${p.name}</h2>
-        <p>${p.description}</p>
+        <p>${p.description || ""}</p>
         <p class="price">€${p.price.toFixed(2)}</p>
         <button class="btn" id="addBtn">Add to cart</button>
       </div>
@@ -64,21 +124,37 @@ async function loadCart(){
 
   items.forEach(i => {
     total += i.subtotal;
+
     const row = document.createElement("div");
     row.className = "row";
     row.innerHTML = `
       <span>${i.name} (x${i.qty})</span>
       <span>€${i.subtotal.toFixed(2)}</span>
-      <button class="btn danger" data-id="${i.productId}">Remove</button>
+      <button class="btn" style="background:#ef4444" data-id="${i.productId}">Remove</button>
     `;
     wrap.appendChild(row);
   });
 
-  $("total").textContent = `Total: €${total.toFixed(2)}`;
+  if ($("total")) $("total").textContent = `Total: €${total.toFixed(2)}`;
 
-  document.querySelectorAll(".danger").forEach(btn => {
-    btn.onclick = () => removeItem(btn.dataset.id);
+  wrap.querySelectorAll("button.btn").forEach(btn=>{
+    btn.onclick = ()=> removeItem(btn.dataset.id);
   });
+
+  updateCartBadge(items);
+}
+
+async function updateCartBadge(items){
+  const badge = $("cartBadge");
+  if (!badge) return;
+
+  if (!items) {
+    const r = await fetch("/api/cart");
+    items = await r.json();
+  }
+  const count = items.reduce((s,i)=> s+i.qty, 0);
+  badge.textContent = count;
+  badge.classList.toggle("hidden", count===0);
 }
 
 // API CALLS
@@ -88,6 +164,7 @@ async function addItem(id, qty){
     headers:{ "Content-Type":"application/json" },
     body: JSON.stringify({ productId:id, qty })
   });
+  updateCartBadge();
   alert("Added!");
 }
 
@@ -98,9 +175,22 @@ async function removeItem(id){
     body: JSON.stringify({ productId:id })
   });
   loadCart();
+  updateCartBadge();
 }
 
+// CHECKOUT
+const form = $("checkout-form");
+if (form) {
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+    const res = await fetch("/api/checkout", { method:"POST" });
+    const data = await res.json();
+    $("checkout-message").textContent = data.message;
+    setTimeout(()=> location.href="index.html", 2000);
+  };
+}
+
+// INIT
 loadProductsList();
 loadProductDetail();
 loadCart();
-

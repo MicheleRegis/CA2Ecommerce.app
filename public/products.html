@@ -3,18 +3,27 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Product</title>
+  <title>Fynko - Product</title>
   <link rel="stylesheet" href="styles.css"/>
 </head>
 <body>
   <header class="topbar">
-    <a href="index.html" class="link">← Back</a>
-    <a href="cart.html" class="link">🛒 Cart</a>
+    <div class="brand">
+      <span class="logo">🛍️</span>
+      <h1 class="brand-title">Fynko</h1>
+    </div>
+    <nav class="nav">
+      <button class="nav-btn" onclick="location.href='index.html'">Products</button>
+      <button class="nav-btn cart-btn" onclick="location.href='cart.html'">
+        Cart <span id="cartBadge" class="badge hidden">0</span>
+      </button>
+    </nav>
   </header>
 
-  <main id="product"></main>
+  <main class="container">
+    <div id="product"></div>
+  </main>
 
   <script src="app.js"></script>
 </body>
 </html>
-
