@@ -1,58 +1,92 @@
-# 📦 Fynko – Dynamic E-Commerce Web Application  
-**Author:** Michele Gonçalo Regis  
-**Course:** Web Development – CA2  
-**Institution:** CCT College Dublin  
-**Year:** 2025  
+<p align="center">
+  <img src="image/logo34.png" alt="Fynko Logo" width="140">
+</p>
+
+<h1 align="center">🛒 Fynko – Dynamic E-Commerce Web Application</h1>
+
+<p align="center">
+  <strong>Full-Stack Web Application • Responsive • Database-Driven • Market-Rate Engine</strong>
+</p>
+
+<p align="center">
+  Desenvolvido por <strong>Michele Gonçalo Regis</strong><br/>
+  CCT College Dublin • Web Development CA2 • 2025
+</p>
 
 ---
 
-## 🌐 Overview
-Fynko is a full-stack e-commerce web application built using:
+# 📌 About the Project
 
-- HTML5  
-- CSS3  
-- JavaScript  
-- Node.js + Express  
-- SQLite3  
-- REST API architecture  
+**Fynko** is a fully functional, full-stack e-commerce platform developed as part of the CA2 assessment for the Web Development module at CCT College Dublin.
 
-The project demonstrates modern web development principles, including responsive UI, dynamic pricing using a simulated market rate, server-side cart management and accessibility-focused design.
+It is built from scratch using:
+
+- **HTML5** — semantic and accessible structure  
+- **CSS3** — modern, responsive UI  
+- **JavaScript** — interactive, dynamic front-end  
+- **Node.js + Express** — REST API server  
+- **SQLite3** — lightweight relational database  
+- **Market Rate Engine** — dynamic price updates between -3% and +3%  
+
+The main goal was to design and implement a **professional-grade** e-commerce system meeting both technical requirements and UX/UI principles.
 
 ---
 
-## ✨ Features
+# 🚀 Features
 
-### 🛒 Shopping
-- Browse all products  
-- Search bar (live filtering)  
-- Category filters  
-- Wishlist (LocalStorage)  
+## 🛍 Product & Shopping Experience  
+- Browse full product catalogue  
 - Product detail pages  
-- Add/remove items from cart  
-- Update quantities  
-- Checkout with validation  
+- Live search (client-side filtering)  
+- Category filters  
+- Add to Cart / Remove / Update quantity  
+- Wishlist (LocalStorage)
+- Persistent cart stored server-side  
 
-### 📈 Dynamic Market Rate
-- “Market rate today” bar  
-- Server generates values between -3% and +3%  
-- Prices update in the database  
-- Front-end re-renders automatically  
+## 📈 Dynamic Pricing (Market Rate Engine)
+- Live "Market Rate Today" banner  
+- REST API generates random variation between **-3% and +3%**  
+- Prices update *inside the database*, not only on the front-end  
+- “Apply Today’s Rate” button updates all prices dynamically  
+- Fully realistic behaviour used in modern e-commerce systems  
 
-### 💾 Server & Database
-- Node.js + Express REST API  
-- SQLite database  
-- CRUD operations for products and cart  
-- Input validation  
-- Error handling middleware  
+## 💾 Back-End Architecture  
+- Express REST API  
+- SQLite relational database  
+- Full CRUD operations  
+- Input validation & error handling  
+- Structured endpoints for scalability  
 
-### 📱 Fully Responsive
-- Mobile-first layout  
-- CSS grid & flex  
-- Scalable components  
+## 📱 Responsive UI  
+- Mobile-first design  
+- CSS Grid & Flexbox  
+- Fluid layout  
+- Components optimized for desktop, tablet, and mobile  
+
+## 🔒 Accessibility  
+- Semantic HTML  
+- ARIA labels  
+- Alt text for images  
+- High-contrast colour palette  
+- Keyboard navigation support  
 
 ---
 
-## 🚀 How to Run
+# 🧱 Technology Stack
 
-### 1. Install dependencies
+| Layer | Technology |
+|-------|------------|
+| **Front-End** | HTML5, CSS3, JavaScript |
+| **Back-End** | Node.js, Express.js |
+| **Database** | SQLite3 |
+| **API Style** | RESTful |
+| **Package Manager** | NPM |
+| **Version Control** | Git + GitHub |
+| **Dev Tools** | VS Code, Chrome DevTools |
+
+---
+
+# 🗂 Project Structure
+
+
 
