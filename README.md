@@ -1,6 +1,3 @@
-<p align="center">
-  <img src="C:\Users\hamdal\Desktop\CCT COLLEGE\Second Semester\Web Development\CA2MicheleGoncaloRegis2025006\public\image\logo34.png" alt="Fynko Logo" width="140">
-</p>
 
 <h1 align="center">🛒 Fynko – Dynamic E-Commerce Web Application</h1>
 
