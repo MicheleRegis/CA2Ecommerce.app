@@ -1,6 +1,5 @@
 const express = require("express");
 const cors = require("cors");
-const path = require("path");
 const db = require("./db");
 
 const app = express();
@@ -8,11 +7,13 @@ const PORT = 3000;
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "public")));
 
-/* ---------------- PRODUCTS ---------------- */
+// serve tudo da pasta public como site
+app.use(express.static("public")); // express.static = padrão pra estáticos :contentReference[oaicite:0]{index=0}
 
-// GET all products
+/* ---------- PRODUCTS API ---------- */
+
+// listar todos os produtos
 app.get("/api/products", (req, res) => {
   db.all("SELECT * FROM products", (err, rows) => {
     if (err) return res.status(500).json({ error: err.message });
@@ -20,24 +21,24 @@ app.get("/api/products", (req, res) => {
   });
 });
 
-// GET single product by id
+// pegar produto por id (page product)
 app.get("/api/products/:id", (req, res) => {
-  db.get("SELECT * FROM products WHERE id = ?", [req.params.id], (err, row) => {
+  const id = req.params.id;
+  db.get("SELECT * FROM products WHERE id = ?", [id], (err, row) => {
     if (err) return res.status(500).json({ error: err.message });
     if (!row) return res.status(404).json({ error: "Product not found" });
     res.json(row);
   });
 });
 
-/* ---------------- CART ---------------- */
+/* ---------- CART API ---------- */
 
-// GET cart with product details
+// pegar carrinho com join
 app.get("/api/cart", (req, res) => {
   const sql = `
-    SELECT cart.id, cart.productId, cart.qty,
-           products.name, products.price, products.image
+    SELECT cart.productId, cart.qty, products.name, products.price, products.image
     FROM cart
-    JOIN products ON products.id = cart.productId
+    JOIN products ON cart.productId = products.id
   `;
   db.all(sql, (err, rows) => {
     if (err) return res.status(500).json({ error: err.message });
@@ -45,10 +46,9 @@ app.get("/api/cart", (req, res) => {
   });
 });
 
-// ADD item to cart
+// adicionar ao carrinho (qty++)
 app.post("/api/cart", (req, res) => {
   const { productId } = req.body;
-  if (!productId) return res.status(400).json({ error: "productId required" });
 
   db.get("SELECT * FROM cart WHERE productId = ?", [productId], (err, row) => {
     if (err) return res.status(500).json({ error: err.message });
@@ -57,33 +57,33 @@ app.post("/api/cart", (req, res) => {
       db.run(
         "UPDATE cart SET qty = qty + 1 WHERE productId = ?",
         [productId],
-        function (err2) {
+        (err2) => {
           if (err2) return res.status(500).json({ error: err2.message });
-          res.json({ message: "Quantity updated" });
+          res.json({ ok: true });
         }
       );
     } else {
       db.run(
         "INSERT INTO cart (productId, qty) VALUES (?, 1)",
         [productId],
-        function (err2) {
+        (err2) => {
           if (err2) return res.status(500).json({ error: err2.message });
-          res.json({ message: "Added to cart" });
+          res.json({ ok: true });
         }
       );
     }
   });
 });
 
-// UPDATE quantity
+// mudar quantidade
 app.put("/api/cart/:productId", (req, res) => {
   const { qty } = req.body;
-  const { productId } = req.params;
+  const productId = req.params.productId;
 
   if (qty <= 0) {
     db.run("DELETE FROM cart WHERE productId = ?", [productId], (err) => {
       if (err) return res.status(500).json({ error: err.message });
-      res.json({ message: "Removed item" });
+      res.json({ ok: true });
     });
   } else {
     db.run(
@@ -91,30 +91,29 @@ app.put("/api/cart/:productId", (req, res) => {
       [qty, productId],
       (err) => {
         if (err) return res.status(500).json({ error: err.message });
-        res.json({ message: "Quantity updated" });
+        res.json({ ok: true });
       }
     );
   }
 });
 
-// REMOVE item
+// remover item
 app.delete("/api/cart/:productId", (req, res) => {
-  const { productId } = req.params;
+  const productId = req.params.productId;
   db.run("DELETE FROM cart WHERE productId = ?", [productId], (err) => {
     if (err) return res.status(500).json({ error: err.message });
-    res.json({ message: "Removed item" });
+    res.json({ ok: true });
   });
 });
 
-// CLEAR cart (checkout)
+// limpar carrinho (checkout)
 app.delete("/api/cart", (req, res) => {
   db.run("DELETE FROM cart", (err) => {
     if (err) return res.status(500).json({ error: err.message });
-    res.json({ message: "Cart cleared" });
+    res.json({ ok: true });
   });
 });
 
-/* ---------------- START SERVER ---------------- */
 app.listen(PORT, () => {
   console.log(`Fynko server running on http://localhost:${PORT}`);
 });

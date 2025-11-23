@@ -33,101 +33,65 @@ db.serialize(() => {
         "INSERT INTO products (name, description, price, image, category) VALUES (?, ?, ?, ?, ?)"
       );
 
-      insert.run(
-        "Wireless Headphones",
+      insert.run("Wireless Headphones",
         "Premium wireless headphones with noise cancellation",
-        79.99,
-        "/image/headphone.png",
-        "Electronics"
+        79.99, "/image/headphone.png", "Electronics"
       );
 
-      insert.run(
-        "Smart Watch",
+      insert.run("Smart Watch",
         "Fitness tracking smart watch with heart rate monitor",
-        199.99,
-        "/image/smartwatch.png",
-        "Electronics"
+        199.99, "/image/smartwatch.png","Electronics"
       );
 
-      insert.run(
-        "Gaming Desk Setup",
-  "Minimalist desk organizer for clean setups",
-  99.99,
-  "/image/desktop.png",
-  "Accessories"
+      insert.run("Gaming Desk Setup",
+        "Minimalist desk organizer for clean setups",
+        99.99, "/image/desktop1.png", "Accessories"
       );
 
-      insert.run(
-        "Mechanical Keyboard",
+      insert.run("Mechanical Keyboard",
         "RGB mechanical gaming keyboard",
-        129.99,
-        "/image/teclado.png",
-        "Electronics"
+        129.99, "/image/teclado.png", "Electronics"
       );
 
-      insert.run(
-        "Wireless Mouse",
+      insert.run("Wireless Mouse",
         "Ergonomic wireless mouse with precision tracking",
-        39.99,
-        "/image/mouse.png",
-        "Electronics"
+        39.99, "/image/mouse.png","Electronics"
       );
 
-      insert.run(
-        "USB-C Hub",
+      insert.run("USB-C Hub",
         "Multi-port USB-C hub with 4K HDMI support",
-        59.99,
-        "/image/usb.png",
-        "Accessories"
+        59.99, "/image/usb.png","Accessories"
       );
-      insert.run(
-        "Laptop Stand",
+
+      insert.run("Laptop Stand",
         "Ergonomic aluminum laptop stand",
-        45.99,
-        "/image/stand.png",
-        "Accessories"
-  
-);
+        45.99, "/image/stand.png","Accessories"
+      );
 
-insert.run(
-  "Pro Cable Kit",
-  "Premium braided USB-C + HDMI set",
-  24.99,
-  "/image/hdmi.png",
-  "Accessories"
-);
+      insert.run("Pro Cable Kit",
+        "Premium braided USB-C + HDMI set",
+        24.99, "/image/hdmi.png","Accessories"
+      );
 
-insert.run(
-  "Studio Headphone Stand",
-  "Compact headphone holder for your desk",
-  19.99,
-  "/image/standheadphone.png",
-  "Accessories"
-);
-insert.run(
-  "iPhone Charger Cable",
-  "Fast charging Lightning cable for iPhone, durable braided design",
-  19.99,
-  "/image/cabocarregador.png",
-  "Accessories"
-);
+      insert.run("Studio Headphone Stand",
+        "Compact headphone holder for your desk",
+        19.99, "/image/standheadphone.png","Accessories"
+      );
 
-insert.run(
-  "Wired Earphones",
-  "High-quality wired earphones with deep bass and noise isolation",
-  24.99,
-  "/image/fonedefio.png",
-  "Electronics"
-);
+      insert.run("iPhone Charger Cable",
+        "Fast charging Lightning cable for iPhone, durable braided design",
+        19.99, "/image/cabocarregador.png","Accessories"
+      );
 
-insert.run(
-  "Phone Case",
-  "Shockproof slim phone case with premium matte finish",
-  14.99,
-  "/image/capadecelular.png",
-  "Accessories"
-);
+      insert.run("Wired Earphones",
+        "High-quality wired earphones with deep bass and noise isolation",
+        24.99, "/image/fonedefio.png","Electronics"
+      );
 
+      insert.run("Phone Case",
+        "Shockproof slim phone case with premium matte finish",
+        14.99, "/image/capadecelular.png","Accessories"
+      );
 
       insert.finalize();
       console.log("Seed products inserted.");

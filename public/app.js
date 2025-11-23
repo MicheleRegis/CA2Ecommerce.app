@@ -4,19 +4,19 @@ let CART = [];
 let WISHLIST = JSON.parse(localStorage.getItem("wishlist")) || [];
 
 const page = document.body.dataset.page;
-
 const qs = (sel) => document.querySelector(sel);
 const money = (v) => `€${Number(v).toFixed(2)}`;
-// Make brand always go home (works on any page)
+
+// brand sempre volta pro home
 document.addEventListener("DOMContentLoaded", () => {
   const brand = document.querySelector(".brand");
-  if (brand && !brand.onclick) {
+  if (brand) {
     brand.style.cursor = "pointer";
     brand.addEventListener("click", () => location.href="index.html");
   }
 });
 
-
+/* BADGE */
 async function updateBadge() {
   const badge = qs("#cartBadge");
   if (!badge) return;
@@ -161,9 +161,8 @@ function attachSearchAndPriceUpdate() {
 
 function openProduct(id){
   location.href = `product.html?id=${id}`;
-  onclick="openProduct(${p.id})"
-
 }
+
 
 async function addToCart(id) {
   await fetch(`${API}/cart`, {
@@ -181,8 +180,8 @@ function renderCarousel(list){
   if (!wrap) return;
   wrap.innerHTML = list.map(p => `
     <div class="carousel-item" onclick="openProduct(${p.id})">
-      <img src="${p.image}" style="width:100%;height:120px;object-fit:contain;background:#0c0e1a;border-radius:8px;">
-      <h4 style="margin-top:10px">${p.name}</h4>
+      <img src="${p.image}" alt="${p.name}">
+      <h4>${p.name}</h4>
       <p class="muted">${money(p.price)}</p>
     </div>
   `).join("");
@@ -197,25 +196,27 @@ function loadProductPage(){
     .then(res => res.json())
     .then(p => {
       const wrap = document.getElementById("productDetail");
-      wrap.classList.remove("skeleton");
+      if (!wrap) return;
 
+      wrap.classList.remove("skeleton");
       wrap.innerHTML = `
         <div class="product-left">
           <img src="${p.image}" alt="${p.name}" onclick="openZoom('${p.image}')">
         </div>
 
-        <div class="product-right">
+        <div class="product-info">
           <h2>${p.name}</h2>
-          <p class="desc">${p.description}</p>
-          <p class="price">€${p.price.toFixed(2)}</p>
-          <button class="btn main" onclick="addToCart(${p.id})">
-            Add to Cart
-          </button>
+          <p>${p.description}</p>
+          <p class="price">${money(p.price)}</p>
+
+          <div class="actions">
+            <button class="btn" onclick="addToCart(${p.id})">Add to Cart</button>
+            <button class="btn outline" onclick="history.back()">Back</button>
+          </div>
         </div>
       `;
     });
 }
-
 
 /* CART */
 async function loadCart() {
@@ -251,7 +252,6 @@ async function loadCart() {
       </div>
 
       <strong class="line-total">${money(i.price * i.qty)}</strong>
-
       <button class="trash" onclick="removeItem(${i.productId})">🗑️</button>
     </div>
   `).join("");
@@ -343,9 +343,10 @@ function attachCheckoutForm(){
     await loadCheckoutSummary();
     attachCheckoutForm();
   }
-  if (page === "product") await loadProductPage();
+  if (page === "product") loadProductPage();
 })();
 
+/* LIGHTBOX / ZOOM */
 function openZoom(src){
   const box = document.getElementById("lightbox");
   const img = document.getElementById("zoomImg");
