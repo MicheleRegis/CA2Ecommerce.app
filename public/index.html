@@ -6,9 +6,12 @@
   <title>Fynko</title>
   <link rel="stylesheet" href="styles.css"/>
 </head>
+
 <body data-page="home">
 
+  <!-- HEADER -->
   <header class="topbar">
+
     <div class="brand" onclick="location.href='index.html'">
       <img src="/image/logo34.png" alt="Fynko Logo" class="logo-img"/>
       <div class="brand-text">
@@ -18,16 +21,24 @@
     </div>
 
     <nav class="nav">
-      <button class="nav-btn active" onclick="location.href='index.html'">Products</button>
+      <button class="nav-btn active" onclick="location.href='index.html'">Home</button>
+      <button class="nav-btn" onclick="location.href='products.html'">Products</button>
       <button class="nav-btn" onclick="location.href='about.html'">About Us</button>
       <button class="nav-btn cart-btn" onclick="location.href='cart.html'">
         Cart <span id="cartBadge" class="badge hidden">0</span>
       </button>
     </nav>
+
   </header>
+
+  <!-- MARKET BAR (fica FORA do header) -->
+  <div id="marketBar" class="market-bar skeleton">
+    Loading market rate...
+  </div>
 
   <main class="container">
 
+    <!-- HERO -->
     <section class="hero">
       <div class="hero-text">
         <span class="pill">New Season • 2025</span>
@@ -57,6 +68,7 @@
       <img src="/image/desk.png" alt="Desk Workspace Banner" class="hero-img"/>
     </section>
 
+    <!-- BEST SELLERS -->
     <section id="featured" class="section">
       <div class="section-head">
         <h3>Best Sellers</h3>
@@ -65,7 +77,7 @@
       <div id="featured-list" class="grid"></div>
     </section>
 
-    <!-- NEW ARRIVALS CAROUSEL -->
+    <!-- NEW ARRIVALS -->
     <section class="section">
       <div class="section-head">
         <h3>New Arrivals</h3>
@@ -74,14 +86,14 @@
       <div id="carousel"></div>
     </section>
 
+    <!-- TOOLBAR (search + category + apply rate) -->
     <section class="toolbar">
       <input id="searchInput" type="text" placeholder="Search products..." />
       <div id="categoryWrap" class="categories"></div>
-      <button id="updatePricesBtn" class="btn green">Update Prices</button>
+      <button id="updatePricesBtn" class="btn green">Apply Today’s Rate</button>
     </section>
 
-  
-
+    <!-- ALL PRODUCTS -->
     <section class="section">
       <div class="section-head">
         <h3>All Products</h3>
@@ -90,6 +102,7 @@
       <section id="product-list" class="grid"></section>
     </section>
 
+    <!-- REVIEWS -->
     <section class="section reviews">
       <div class="section-head">
         <h3>What customers say</h3>
@@ -102,11 +115,13 @@
           <p>“The headphones are insane. Comfort + sound are top.”</p>
           <span class="reviewer">— Camila R.</span>
         </article>
+
         <article class="review-card">
           <div class="stars">★★★★★</div>
           <p>“Fast delivery, product exactly as described. 10/10.”</p>
           <span class="reviewer">— João P.</span>
         </article>
+
         <article class="review-card">
           <div class="stars">★★★★☆</div>
           <p>“Laptop stand improved my posture. Worth it.”</p>
@@ -117,13 +132,14 @@
 
   </main>
 
-  <!-- Footer -->
+  <!-- FOOTER -->
   <footer class="footer">
     <div class="footer-grid">
+
       <div>
         <h4>Fynko</h4>
         <p class="muted">
-          Curated tech essentials for modern life.  
+          Curated tech essentials for modern life.<br>
           Built with quality, shipped with care.
         </p>
       </div>
@@ -131,7 +147,8 @@
       <div>
         <h4>Explore</h4>
         <ul>
-          <li><a href="index.html">Products</a></li>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="products.html">Products</a></li>
           <li><a href="about.html">About Us</a></li>
           <li><a href="cart.html">Cart</a></li>
         </ul>
@@ -160,6 +177,7 @@
           </a>
         </div>
       </div>
+
     </div>
 
     <div class="footer-bottom">
@@ -169,5 +187,6 @@
 
   <div id="toast" class="toast hidden"></div>
   <script src="app.js"></script>
+
 </body>
 </html>

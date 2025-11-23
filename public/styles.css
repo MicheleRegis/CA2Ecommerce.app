@@ -328,3 +328,172 @@ button:focus, a:focus, input:focus {
   outline: 2px solid var(--accent-2);
   outline-offset: 2px;
 }
+
+/* === ADICIONE ISSO NO FINAL DO styles.css === */
+
+/* Loading animation melhorada */
+.skeleton {
+  background: linear-gradient(90deg, var(--card) 25%, rgba(255,255,255,0.1) 50%, var(--card) 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: var(--radius);
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Melhorar visual do empty state */
+.empty {
+  text-align: center;
+  padding: 40px 20px;
+  background: var(--card);
+  border-radius: var(--radius);
+  border: 1px solid rgba(255,255,255,.06);
+}
+
+.empty h3 {
+  margin-bottom: 16px;
+  color: var(--muted);
+}
+/* ================================
+   RESPONSIVE FIX PACK (CA2)
+   Cole no final do styles.css
+================================ */
+
+/* Tipografia fluida */
+.hero-text h2 {
+  font-size: clamp(24px, 5vw, 38px);
+  line-height: 1.15;
+}
+.section-head h3 {
+  font-size: clamp(18px, 3.5vw, 22px);
+}
+.page-title {
+  font-size: clamp(20px, 4vw, 28px);
+}
+.price, .product-info .price {
+  font-size: clamp(18px, 3.5vw, 24px);
+}
+.brand-title {
+  font-size: clamp(18px, 3vw, 22px);
+}
+.brand-sub {
+  font-size: clamp(10px, 2vw, 11px);
+}
+
+/* Imagens com altura adaptável */
+.hero-img {
+  height: min(280px, 55vw);
+}
+.about-img {
+  height: min(240px, 50vw);
+}
+.product-detail img {
+  height: min(320px, 70vw);
+}
+.card img {
+  height: min(200px, 55vw);
+}
+
+/* Breakpoint 900 já existe. Abaixo reforço para tablet/móvel */
+@media (max-width: 700px) {
+  .container { padding: 14px 14px 32px; }
+
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  #searchInput { width: 100%; }
+
+  .hero-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  .hero-actions .btn { width: 100%; }
+
+  .trust-row {
+    justify-content: center;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  #carousel {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .cart-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .line-total {
+    width: 100%;
+    text-align: left;
+  }
+  .qty {
+    margin: 6px 0;
+  }
+
+  .product-detail {
+    grid-template-columns: 1fr;
+  }
+
+  .about-hero {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+/* Mobile pequeno */
+@media (max-width: 420px) {
+  #carousel { grid-template-columns: 1fr; }
+
+  .nav {
+    gap: 4px;
+  }
+  .nav-btn {
+    padding: 6px 8px;
+    font-size: 12px;
+  }
+
+  .card-body { padding: 12px; }
+  .desc { font-size: 13px; }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.market-bar {
+  background: linear-gradient(90deg, rgba(124,58,237,.25), rgba(34,211,238,.25));
+  padding: 10px 16px;
+  margin: 0 0 16px 0;
+  border-radius: 12px;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
+.market-bar button {
+  background: var(--accent);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.market-bar button:hover {
+  filter: brightness(1.1);
+}

@@ -1,3 +1,54 @@
+async function loadMarketRate() {
+  const bar = document.getElementById("marketBar");
+  if (!bar) return;
+
+  try {
+    // força pegar do servidor e evita cache maldito
+    const res = await fetch(`${API}/market-rate`, { cache: "no-store" });
+    if (!res.ok) throw new Error("market-rate not ok");
+
+    const data = await res.json();
+
+    const pct = ((data.rate - 1) * 100).toFixed(2);
+    const sign = pct > 0 ? "+" : "";
+
+    bar.classList.remove("skeleton");
+    bar.innerHTML = `
+      <span>Market rate today: ${sign}${pct}%</span>
+      <button id="applyRateBtn">Apply Today’s Rate</button>
+    `;
+
+    document
+      .getElementById("applyRateBtn")
+      .addEventListener("click", applyMarketRate);
+
+  } catch (err) {
+    console.error("Market rate error:", err);
+    bar.classList.remove("skeleton");
+    bar.textContent = "Market rate unavailable";
+  }
+}
+
+
+async function applyMarketRate() {
+  const data = await apiCall("/api/products/update-prices", { method: "POST" });
+  if (!data) return;
+
+  // reload products
+  const fresh = await apiCall("/api/products");
+  if (fresh) PRODUCTS = fresh;
+
+  renderFeatured(PRODUCTS.slice(0, 3));
+  renderProducts(PRODUCTS);
+  renderCarousel(PRODUCTS.slice(-4));
+
+  const pct = ((data.rate - 1) * 100).toFixed(2);
+  const sign = pct > 0 ? "+" : "";
+
+  showToast(`Applied today's rate: ${sign}${pct}%`);
+}
+
+
 const API = "/api";
 let PRODUCTS = [];
 let CART = [];
@@ -7,12 +58,27 @@ const page = document.body.dataset.page;
 const qs = (sel) => document.querySelector(sel);
 const money = (v) => `€${Number(v).toFixed(2)}`;
 
-// brand sempre volta pro home
+/* ===============================
+   API CALL helper
+================================ */
+async function apiCall(url, options = {}) {
+  try {
+    const response = await fetch(url, options);
+    if (!response.ok) throw new Error("API error");
+    return await response.json();
+  } catch (error) {
+    showToast("Network error - please try again");
+    console.error("API Error:", error);
+    return null;
+  }
+}
+
+/* brand sempre volta pro home */
 document.addEventListener("DOMContentLoaded", () => {
   const brand = document.querySelector(".brand");
   if (brand) {
     brand.style.cursor = "pointer";
-    brand.addEventListener("click", () => location.href="index.html");
+    brand.addEventListener("click", () => (location.href = "index.html"));
   }
 });
 
@@ -21,16 +87,17 @@ async function updateBadge() {
   const badge = qs("#cartBadge");
   if (!badge) return;
 
-  const res = await fetch(`${API}/cart`);
-  CART = await res.json();
-  const totalQty = CART.reduce((s, i) => s + i.qty, 0);
+  const cart = await apiCall(`${API}/cart`);
+  if (!cart) return;
 
+  CART = cart;
+  const totalQty = CART.reduce((s, i) => s + i.qty, 0);
   badge.textContent = totalQty;
   badge.classList.toggle("hidden", totalQty === 0);
 }
 
 /* TOAST */
-function showToast(msg){
+function showToast(msg) {
   const t = document.getElementById("toast");
   if (!t) return;
   t.textContent = msg;
@@ -44,9 +111,9 @@ function showToast(msg){
 }
 
 /* FAVORITES */
-function toggleFav(id){
+function toggleFav(id) {
   if (WISHLIST.includes(id)) {
-    WISHLIST = WISHLIST.filter(f => f !== id);
+    WISHLIST = WISHLIST.filter((f) => f !== id);
     showToast("Removed from favorites ❤️");
   } else {
     WISHLIST.push(id);
@@ -54,7 +121,7 @@ function toggleFav(id){
   }
   localStorage.setItem("wishlist", JSON.stringify(WISHLIST));
   renderProducts(PRODUCTS);
-  renderFeatured(PRODUCTS.slice(0,3));
+  renderFeatured(PRODUCTS.slice(0, 3));
 }
 
 /* HOME */
@@ -64,20 +131,21 @@ async function loadProducts() {
     listWrap.innerHTML = "<div class='card skeleton' style='height:260px;'></div>".repeat(6);
   }
 
-  const res = await fetch(`${API}/products`);
-  PRODUCTS = await res.json();
+  const res = await apiCall(`${API}/products`);
+  if (!res) return;
 
-  renderFeatured(PRODUCTS.slice(0,3));
+  PRODUCTS = res;
+  renderFeatured(PRODUCTS.slice(0, 3));
   renderCategories();
   renderProducts(PRODUCTS);
   renderCarousel(PRODUCTS.slice(-4));
 }
 
-function productCard(p){
+function productCard(p) {
   const isFav = WISHLIST.includes(p.id);
   return `
     <article class="card">
-      <button class="fav-btn" onclick="toggleFav(${p.id}); event.stopPropagation();">
+      <button class="fav-btn" aria-label="toggle favorite" onclick="toggleFav(${p.id}); event.stopPropagation();">
         ${isFav ? "❤️" : "🤍"}
       </button>
 
@@ -103,7 +171,7 @@ function productCard(p){
   `;
 }
 
-function renderFeatured(list){
+function renderFeatured(list) {
   const wrap = qs("#featured-list");
   if (!wrap) return;
   wrap.innerHTML = list.map(productCard).join("");
@@ -119,19 +187,23 @@ function renderCategories() {
   const wrap = qs("#categoryWrap");
   if (!wrap) return;
 
-  const cats = ["All", ...new Set(PRODUCTS.map(p => p.category))];
-  wrap.innerHTML = cats.map(c => `
-    <button class="cat-btn ${c==="All"?"active":""}" data-cat="${c}">${c}</button>
-  `).join("");
+  const cats = ["All", ...new Set(PRODUCTS.map((p) => p.category))];
+  wrap.innerHTML = cats
+    .map(
+      (c) => `
+    <button class="cat-btn ${c === "All" ? "active" : ""}" data-cat="${c}">${c}</button>
+  `
+    )
+    .join("");
 
   wrap.addEventListener("click", (e) => {
     if (!e.target.dataset.cat) return;
-    wrap.querySelectorAll(".cat-btn").forEach(b => b.classList.remove("active"));
+    wrap.querySelectorAll(".cat-btn").forEach((b) => b.classList.remove("active"));
     e.target.classList.add("active");
 
     const cat = e.target.dataset.cat;
     if (cat === "All") renderProducts(PRODUCTS);
-    else renderProducts(PRODUCTS.filter(p => p.category === cat));
+    else renderProducts(PRODUCTS.filter((p) => p.category === cat));
   });
 }
 
@@ -147,75 +219,88 @@ function attachSearchAndPriceUpdate() {
   }
 
   if (updateBtn) {
-    updateBtn.addEventListener("click", () => {
-      PRODUCTS = PRODUCTS.map(p => ({
-        ...p,
-        price: +(p.price * (0.95 + Math.random() * 0.1)).toFixed(2)
-      }));
-      renderFeatured(PRODUCTS.slice(0,3));
+    updateBtn.addEventListener("click", async () => {
+      // chama update no servidor
+      const data = await apiCall(`${API}/products/update-prices`, { method: "POST" });
+      if (!data) return;
+
+      // agora RECARREGA do server pra garantir
+      const fresh = await apiCall(`${API}/products`);
+      if (!fresh) return;
+
+      PRODUCTS = fresh;
+      renderFeatured(PRODUCTS.slice(0, 3));
       renderProducts(PRODUCTS);
-      showToast("Prices updated ✅");
+      renderCarousel(PRODUCTS.slice(-4));
+
+      showToast(`Prices updated by market rate x${data.rate} ✅`);
     });
   }
 }
 
-function openProduct(id){
+
+function openProduct(id) {
   location.href = `product.html?id=${id}`;
 }
 
-
 async function addToCart(id) {
-  await fetch(`${API}/cart`, {
+  const res = await apiCall(`${API}/cart`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ productId: id })
   });
+  if (!res) return;
+
   updateBadge();
   showToast("Added to cart ✔");
 }
 
 /* CAROUSEL */
-function renderCarousel(list){
+function renderCarousel(list) {
   const wrap = qs("#carousel");
   if (!wrap) return;
-  wrap.innerHTML = list.map(p => `
+  wrap.innerHTML = list
+    .map(
+      (p) => `
     <div class="carousel-item" onclick="openProduct(${p.id})">
-      <img src="${p.image}" alt="${p.name}">
-      <h4>${p.name}</h4>
+      <img src="${p.image}" alt="${p.name}" style="width:100%;height:120px;object-fit:contain;background:#0c0e1a;border-radius:8px;">
+      <h4 style="margin-top:10px">${p.name}</h4>
       <p class="muted">${money(p.price)}</p>
     </div>
-  `).join("");
+  `
+    )
+    .join("");
 }
 
 /* PRODUCT PAGE */
-function loadProductPage(){
+function loadProductPage() {
   const params = new URLSearchParams(location.search);
   const id = parseInt(params.get("id"));
 
-  fetch(`/api/products/${id}`)
-    .then(res => res.json())
-    .then(p => {
-      const wrap = document.getElementById("productDetail");
-      if (!wrap) return;
+  apiCall(`/api/products/${id}`).then((p) => {
+    if (!p) return;
 
-      wrap.classList.remove("skeleton");
-      wrap.innerHTML = `
-        <div class="product-left">
-          <img src="${p.image}" alt="${p.name}" onclick="openZoom('${p.image}')">
+    const wrap = document.getElementById("productDetail");
+    if (!wrap) return;
+
+    wrap.classList.remove("skeleton");
+    wrap.innerHTML = `
+      <div class="product-left">
+        <img src="${p.image}" alt="${p.name}" onclick="openZoom('${p.image}')">
+      </div>
+
+      <div class="product-info">
+        <h2>${p.name}</h2>
+        <p>${p.description}</p>
+        <p class="price">${money(p.price)}</p>
+
+        <div class="actions">
+          <button class="btn" onclick="addToCart(${p.id})">Add to Cart</button>
+          <button class="btn outline" onclick="history.back()">Back</button>
         </div>
-
-        <div class="product-info">
-          <h2>${p.name}</h2>
-          <p>${p.description}</p>
-          <p class="price">${money(p.price)}</p>
-
-          <div class="actions">
-            <button class="btn" onclick="addToCart(${p.id})">Add to Cart</button>
-            <button class="btn outline" onclick="history.back()">Back</button>
-          </div>
-        </div>
-      `;
-    });
+      </div>
+    `;
+  });
 }
 
 /* CART */
@@ -223,8 +308,10 @@ async function loadCart() {
   const wrap = qs("#cart-list");
   if (!wrap) return;
 
-  const res = await fetch(`${API}/cart`);
-  CART = await res.json();
+  const cart = await apiCall(`${API}/cart`);
+  if (!cart) return;
+
+  CART = cart;
 
   if (CART.length === 0) {
     wrap.innerHTML = `
@@ -237,7 +324,9 @@ async function loadCart() {
     return;
   }
 
-  wrap.innerHTML = CART.map(i => `
+  wrap.innerHTML = CART
+    .map(
+      (i) => `
     <div class="cart-item">
       <img src="${i.image}" alt="${i.name}">
       <div class="cart-info">
@@ -246,65 +335,80 @@ async function loadCart() {
       </div>
 
       <div class="qty">
-        <button onclick="changeQty(${i.productId}, ${i.qty-1})">-</button>
+        <button aria-label="decrease quantity" onclick="changeQty(${i.productId}, ${i.qty - 1})">-</button>
         <span>${i.qty}</span>
-        <button onclick="changeQty(${i.productId}, ${i.qty+1})">+</button>
+        <button aria-label="increase quantity" onclick="changeQty(${i.productId}, ${i.qty + 1})">+</button>
       </div>
 
       <strong class="line-total">${money(i.price * i.qty)}</strong>
-      <button class="trash" onclick="removeItem(${i.productId})">🗑️</button>
+      <button class="trash" aria-label="remove item" onclick="removeItem(${i.productId})">🗑️</button>
     </div>
-  `).join("");
+  `
+    )
+    .join("");
 
   const total = CART.reduce((s, i) => s + i.price * i.qty, 0);
   qs("#cartTotal").textContent = money(total);
 
-  qs("#checkoutBtn").onclick = () => location.href = "checkout.html";
+  const checkoutBtn = qs("#checkoutBtn");
+  if (checkoutBtn) checkoutBtn.onclick = () => (location.href = "checkout.html");
 }
 
 async function changeQty(productId, qty) {
-  await fetch(`${API}/cart/${productId}`, {
+  if (qty < 0) return;
+
+  const res = await apiCall(`${API}/cart/${productId}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ qty })
   });
+  if (!res) return;
+
   loadCart();
   updateBadge();
 }
 
 async function removeItem(productId) {
-  await fetch(`${API}/cart/${productId}`, { method: "DELETE" });
+  const res = await apiCall(`${API}/cart/${productId}`, { method: "DELETE" });
+  if (!res) return;
+
   loadCart();
   updateBadge();
 }
 
 /* CHECKOUT */
-async function loadCheckoutSummary(){
-  const res = await fetch(`${API}/cart`);
-  CART = await res.json();
+async function loadCheckoutSummary() {
+  const cart = await apiCall(`${API}/cart`);
+  if (!cart) return;
+
+  CART = cart;
 
   const list = qs("#summaryList");
   const totalEl = qs("#summaryTotal");
   if (!list || !totalEl) return;
 
-  if (CART.length === 0){
+  if (CART.length === 0) {
     list.innerHTML = "<p class='muted'>Your cart is empty.</p>";
     totalEl.textContent = money(0);
     return;
   }
 
-  list.innerHTML = CART.map(i => `
+  list.innerHTML = CART
+    .map(
+      (i) => `
     <div class="summary-item">
       <span>${i.name} x${i.qty}</span>
       <span>${money(i.price * i.qty)}</span>
     </div>
-  `).join("");
+  `
+    )
+    .join("");
 
-  const total = CART.reduce((s,i)=> s + i.price*i.qty, 0);
+  const total = CART.reduce((s, i) => s + i.price * i.qty, 0);
   totalEl.textContent = money(total);
 }
 
-function attachCheckoutForm(){
+function attachCheckoutForm() {
   const form = qs("#checkoutForm");
   if (!form) return;
 
@@ -315,23 +419,26 @@ function attachCheckoutForm(){
     const email = qs("#email").value.trim();
     const phone = qs("#phone").value.trim();
 
-    if (!fullName || !email || !phone){
+    if (!fullName || !email || !phone) {
       showToast("Fill all fields before confirming ❗");
       return;
     }
 
-    await fetch(`${API}/cart`, { method: "DELETE" });
+    const cleared = await apiCall(`${API}/cart`, { method: "DELETE" });
+    if (!cleared) return;
 
     qs("#checkoutSuccess").classList.remove("hidden");
     showToast("Order confirmed ✅");
 
-    setTimeout(() => location.href="index.html", 2200);
+    setTimeout(() => (location.href = "index.html"), 2200);
   });
 }
 
 /* INIT */
-(async function init(){
+(async function init() {
   await updateBadge();
+  await loadMarketRate();
+
 
   if (page === "home") {
     await loadProducts();
@@ -347,14 +454,15 @@ function attachCheckoutForm(){
 })();
 
 /* LIGHTBOX / ZOOM */
-function openZoom(src){
+function openZoom(src) {
   const box = document.getElementById("lightbox");
   const img = document.getElementById("zoomImg");
-  if(!box || !img) return;
+  if (!box || !img) return;
   img.src = src;
   box.classList.add("show");
 }
-function closeZoom(){
+
+function closeZoom() {
   const box = document.getElementById("lightbox");
-  if(box) box.classList.remove("show");
+  if (box) box.classList.remove("show");
 }
