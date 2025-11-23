@@ -50,11 +50,11 @@ db.serialize(() => {
       );
 
       insert.run(
-        "Laptop Stand",
-        "Ergonomic aluminum laptop stand",
-        45.99,
-        "/image/stand.png",
-        "Accessories"
+        "Gaming Desk Setup",
+  "Minimalist desk organizer for clean setups",
+  99.99,
+  "/image/desktop.png",
+  "Accessories"
       );
 
       insert.run(
@@ -81,18 +81,19 @@ db.serialize(() => {
         "Accessories"
       );
       insert.run(
-  "Gaming Desk Setup",
-  "Minimalist desk organizer for clean setups",
-  99.99,
-  "/image/desk.png",
-  "Accessories"
+        "Laptop Stand",
+        "Ergonomic aluminum laptop stand",
+        45.99,
+        "/image/stand.png",
+        "Accessories"
+  
 );
 
 insert.run(
   "Pro Cable Kit",
   "Premium braided USB-C + HDMI set",
   24.99,
-  "/image/usb.png",
+  "/image/hdmi.png",
   "Accessories"
 );
 
@@ -100,7 +101,30 @@ insert.run(
   "Studio Headphone Stand",
   "Compact headphone holder for your desk",
   19.99,
-  "/image/headphone.png",
+  "/image/standheadphone.png",
+  "Accessories"
+);
+insert.run(
+  "iPhone Charger Cable",
+  "Fast charging Lightning cable for iPhone, durable braided design",
+  19.99,
+  "/image/cabocarregador.png",
+  "Accessories"
+);
+
+insert.run(
+  "Wired Earphones",
+  "High-quality wired earphones with deep bass and noise isolation",
+  24.99,
+  "/image/fonedefio.png",
+  "Electronics"
+);
+
+insert.run(
+  "Phone Case",
+  "Shockproof slim phone case with premium matte finish",
+  14.99,
+  "/image/capadecelular.png",
   "Accessories"
 );
 
