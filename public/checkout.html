@@ -6,32 +6,36 @@
   <title>Fynko - Checkout</title>
   <link rel="stylesheet" href="styles.css"/>
 </head>
-<body>
+<body data-page="checkout">
+
   <header class="topbar">
     <div class="brand">
-      <span class="logo">🛍️</span>
+      <img src="/image/logo34.png" alt="Fynko Logo" class="logo-img"/>
       <h1 class="brand-title">Fynko</h1>
     </div>
+
     <nav class="nav">
       <button class="nav-btn" onclick="location.href='index.html'">Products</button>
-      <button class="nav-btn cart-btn" onclick="location.href='cart.html'">
-        Cart <span id="cartBadge" class="badge hidden">0</span>
-      </button>
+      <button class="nav-btn active cart-btn" onclick="location.href='cart.html'">Cart</button>
     </nav>
   </header>
 
   <main class="container">
-    <h2>Checkout</h2>
+    <h2 class="page-title">Checkout</h2>
 
-    <form id="checkout-form" class="checkout-form">
-      <input required name="fullName" placeholder="Full name"/>
-      <input required name="address" placeholder="Address"/>
-      <input required name="card" placeholder="Card number"/>
-      <button class="btn" type="submit">Place Order</button>
-    </form>
+    <div class="checkout-box">
+      <p>Confirm your order and complete purchase.</p>
+      <button id="confirmCheckoutBtn" class="btn full green">Confirm Order</button>
 
-    <p id="checkout-message"></p>
+      <div id="checkoutSuccess" class="success hidden">
+        ✅ Order Completed! Redirecting to products...
+      </div>
+    </div>
   </main>
+
+  <footer class="footer">
+    <p>© 2025 Fynko</p>
+  </footer>
 
   <script src="app.js"></script>
 </body>

@@ -8,97 +8,113 @@ const PORT = 3000;
 
 app.use(cors());
 app.use(express.json());
+app.use(express.static(path.join(__dirname, "public")));
 
-// servir pasta public
-app.use(express.static(path.join(__dirname, "public"))); // :contentReference[oaicite:4]{index=4}
+/* ---------------- PRODUCTS ---------------- */
 
-// helpers
-function updateMarketRate(price) {
-  const factor = 0.9 + Math.random() * 0.2; // 0.9 - 1.1
-  return parseFloat((price * factor).toFixed(2));
-}
-
-/* ===== PRODUCTS ===== */
-
-// listar todos com preço atualizado
+// GET all products
 app.get("/api/products", (req, res) => {
-  db.all("SELECT * FROM products", [], (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
-
-    const updated = rows.map(p => ({
-      ...p,
-      price: updateMarketRate(p.price)
-    }));
-
-    res.json(updated);
-  });
-});
-
-// detalhe
-app.get("/api/products/:id", (req, res) => {
-  const id = req.params.id;
-  db.get("SELECT * FROM products WHERE id = ?", [id], (err, row) => {
-    if (err) return res.status(500).json({ error: err.message });
-    if (!row) return res.status(404).json({ error: "Product not found" });
-
-    row.price = updateMarketRate(row.price);
-    res.json(row);
-  });
-});
-
-/* ===== CART ===== */
-app.get("/api/cart", (req, res) => {
-  const sql = `
-    SELECT c.productId, c.qty, p.name, p.price, p.image,
-           (c.qty * p.price) AS subtotal
-    FROM cart c
-    JOIN products p ON p.id = c.productId
-  `;
-  db.all(sql, [], (err, rows) => {
+  db.all("SELECT * FROM products", (err, rows) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json(rows);
   });
 });
 
-app.post("/api/cart/add", (req, res) => {
-  const { productId, qty } = req.body;
+// GET single product by id
+app.get("/api/products/:id", (req, res) => {
+  db.get("SELECT * FROM products WHERE id = ?", [req.params.id], (err, row) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (!row) return res.status(404).json({ error: "Product not found" });
+    res.json(row);
+  });
+});
 
-  db.get("SELECT qty FROM cart WHERE productId = ?", [productId], (err, row) => {
+/* ---------------- CART ---------------- */
+
+// GET cart with product details
+app.get("/api/cart", (req, res) => {
+  const sql = `
+    SELECT cart.id, cart.productId, cart.qty,
+           products.name, products.price, products.image
+    FROM cart
+    JOIN products ON products.id = cart.productId
+  `;
+  db.all(sql, (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows);
+  });
+});
+
+// ADD item to cart
+app.post("/api/cart", (req, res) => {
+  const { productId } = req.body;
+  if (!productId) return res.status(400).json({ error: "productId required" });
+
+  db.get("SELECT * FROM cart WHERE productId = ?", [productId], (err, row) => {
     if (err) return res.status(500).json({ error: err.message });
 
     if (row) {
       db.run(
-        "UPDATE cart SET qty = qty + ? WHERE productId = ?",
-        [qty, productId],
-        () => res.json({ ok: true })
+        "UPDATE cart SET qty = qty + 1 WHERE productId = ?",
+        [productId],
+        function (err2) {
+          if (err2) return res.status(500).json({ error: err2.message });
+          res.json({ message: "Quantity updated" });
+        }
       );
     } else {
       db.run(
-        "INSERT INTO cart (productId, qty) VALUES (?, ?)",
-        [productId, qty],
-        () => res.json({ ok: true })
+        "INSERT INTO cart (productId, qty) VALUES (?, 1)",
+        [productId],
+        function (err2) {
+          if (err2) return res.status(500).json({ error: err2.message });
+          res.json({ message: "Added to cart" });
+        }
       );
     }
   });
 });
 
-app.post("/api/cart/remove", (req, res) => {
-  const { productId } = req.body;
+// UPDATE quantity
+app.put("/api/cart/:productId", (req, res) => {
+  const { qty } = req.body;
+  const { productId } = req.params;
 
+  if (qty <= 0) {
+    db.run("DELETE FROM cart WHERE productId = ?", [productId], (err) => {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({ message: "Removed item" });
+    });
+  } else {
+    db.run(
+      "UPDATE cart SET qty = ? WHERE productId = ?",
+      [qty, productId],
+      (err) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ message: "Quantity updated" });
+      }
+    );
+  }
+});
+
+// REMOVE item
+app.delete("/api/cart/:productId", (req, res) => {
+  const { productId } = req.params;
   db.run("DELETE FROM cart WHERE productId = ?", [productId], (err) => {
     if (err) return res.status(500).json({ error: err.message });
-    res.json({ ok: true });
+    res.json({ message: "Removed item" });
   });
 });
 
-/* ===== CHECKOUT (demo) ===== */
-app.post("/api/checkout", (req, res) => {
-  // em app real: salvar order, limpar cart etc.
-  db.run("DELETE FROM cart", [], () => {
-    res.json({ ok: true, message: "Order placed! (demo)" });
+// CLEAR cart (checkout)
+app.delete("/api/cart", (req, res) => {
+  db.run("DELETE FROM cart", (err) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ message: "Cart cleared" });
   });
 });
 
+/* ---------------- START SERVER ---------------- */
 app.listen(PORT, () => {
   console.log(`Fynko server running on http://localhost:${PORT}`);
 });

@@ -6,12 +6,14 @@
   <title>Fynko - Cart</title>
   <link rel="stylesheet" href="styles.css"/>
 </head>
-<body>
+<body data-page="cart">
+
   <header class="topbar">
     <div class="brand">
-      <span class="logo">🛍️</span>
+      <img src="/image/logo34.png" alt="Fynko Logo" class="logo-img"/>
       <h1 class="brand-title">Fynko</h1>
     </div>
+
     <nav class="nav">
       <button class="nav-btn" onclick="location.href='index.html'">Products</button>
       <button class="nav-btn active cart-btn" onclick="location.href='cart.html'">
@@ -21,11 +23,22 @@
   </header>
 
   <main class="container">
-    <h2>Shopping Cart</h2>
-    <div id="cart-items"></div>
-    <h3 id="total">Total: €0.00</h3>
-    <button class="btn" onclick="location.href='checkout.html'">Proceed to Checkout</button>
+    <h2 class="page-title">Shopping Cart</h2>
+
+    <section id="cart-list" class="cart-list"></section>
+
+    <section class="cart-summary">
+      <div class="summary-row">
+        <span>Total:</span>
+        <strong id="cartTotal">€0.00</strong>
+      </div>
+      <button id="checkoutBtn" class="btn full">Proceed to Checkout</button>
+    </section>
   </main>
+
+  <footer class="footer">
+    <p>© 2025 Fynko</p>
+  </footer>
 
   <script src="app.js"></script>
 </body>

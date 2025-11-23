@@ -1,7 +1,6 @@
 const sqlite3 = require("sqlite3").verbose();
 const db = new sqlite3.Database("./ecommerce.db");
 
-// cria tabelas e faz seed
 db.serialize(() => {
   db.run(`
     CREATE TABLE IF NOT EXISTS products (
@@ -23,7 +22,6 @@ db.serialize(() => {
     )
   `);
 
-  // seed (só insere se vazio)
   db.get("SELECT COUNT(*) as count FROM products", (err, row) => {
     if (err) {
       console.error("Error checking products table:", err.message);
@@ -83,13 +81,8 @@ db.serialize(() => {
         "Accessories"
       );
 
-      insert.finalize((finalizeErr) => {
-        if (finalizeErr) {
-          console.error("Error finalizing insert:", finalizeErr.message);
-        } else {
-          console.log("Seed products inserted.");
-        }
-      });
+      insert.finalize();
+      console.log("Seed products inserted.");
     }
   });
 });
