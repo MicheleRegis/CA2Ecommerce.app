@@ -3,12 +3,11 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Checkout • Fynko</title>
+  <title>About Us • Fynko</title>
   <link rel="stylesheet" href="styles.css"/>
 </head>
-<body data-page="checkout">
+<body data-page="about">
 
-  <!-- Header -->
   <header class="topbar">
     <div class="brand" onclick="location.href='index.html'">
       <img src="/image/logo34.png" alt="Fynko Logo" class="logo-img"/>
@@ -20,53 +19,84 @@
 
     <nav class="nav">
       <button class="nav-btn" onclick="location.href='index.html'">Products</button>
-      <button class="nav-btn" onclick="location.href='about.html'">About Us</button>
+      <button class="nav-btn active" onclick="location.href='about.html'">About Us</button>
       <button class="nav-btn cart-btn" onclick="location.href='cart.html'">
         Cart <span id="cartBadge" class="badge hidden">0</span>
       </button>
     </nav>
   </header>
 
-  <main class="container">
-    <h2 class="page-title">Checkout</h2>
-
-    <section class="checkout-grid">
-      <!-- FORM -->
-      <form id="checkoutForm" class="checkout-card">
-        <h3>Customer Details</h3>
-
-        <label>Full Name *</label>
-        <input id="fullName" type="text" placeholder="Your full name" required />
-
-        <label>Email *</label>
-        <input id="email" type="email" placeholder="you@email.com" required />
-
-        <label>Phone *</label>
-        <input id="phone" type="tel" placeholder="+353 ..." required />
-
-        <button type="submit" class="btn full">Confirm Purchase</button>
-        <p class="muted small">
-          By confirming, you agree to our store policies.
+  <main class="container about-wrap">
+    <section class="about-hero">
+      <div>
+        <span class="pill">Since 2020</span>
+        <h2>Our story is your upgrade.</h2>
+        <p class="muted">
+          Fynko started inside a tiny student apartment in Dublin.  
+          What began as a personal hunt for better tech accessories turned into a brand built on one promise:
+          <strong>only sell what truly improves life.</strong>
         </p>
-      </form>
+      </div>
+      <img src="/image/desk.png" alt="Fynko workspace" class="about-img"/>
+    </section>
 
-      <!-- SUMMARY -->
-      <div class="checkout-card">
-        <h3>Order Summary</h3>
-        <div id="summaryList" class="summary-list"></div>
-        <div class="summary-total">
-          <span>Total:</span>
-          <strong id="summaryTotal">€0.00</strong>
+    <section class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-content">
+          <h3>2020 — The beginning</h3>
+          <p>
+            We were tired of overpriced, low-quality gadgets. So we started reviewing and curating the best ones.
+          </p>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-content">
+          <h3>2022 — The community grew</h3>
+          <p>
+            Our recommendations went viral among students, gamers and remote workers. Fynko became a trusted name.
+          </p>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-content">
+          <h3>2025 — A full curated store</h3>
+          <p>
+            Today we deliver premium essentials across Ireland, keeping the same mission: quality first, always.
+          </p>
         </div>
       </div>
     </section>
 
-    <div id="checkoutSuccess" class="success-box hidden">
-      ✅ Order confirmed! Thank you for buying with Fynko.
-    </div>
+    <section class="section about-grid">
+      <article class="about-card">
+        <h3>Our mission</h3>
+        <p>
+          Help people upgrade comfort and productivity with reliable, beautifully designed tech.
+        </p>
+      </article>
+
+      <article class="about-card">
+        <h3>Why Fynko?</h3>
+        <p>
+          We test, compare and curate everything. If it’s not excellent, it’s not Fynko.
+        </p>
+      </article>
+
+      <article class="about-card">
+        <h3>People first support</h3>
+        <p>
+          Real humans answering fast — because premium service matters as much as premium products.
+        </p>
+      </article>
+    </section>
   </main>
 
-  <!-- Footer (MESMO DO INDEX) -->
+   <!-- Footer -->
   <footer class="footer">
     <div class="footer-grid">
       <div>
@@ -98,12 +128,15 @@
       <div>
         <h4>Follow us</h4>
         <div class="socials">
+          <!-- Instagram -->
           <a href="#" aria-label="Instagram" class="social">
             <svg viewBox="0 0 24 24"><path d="M7 3C4.79 3 3 4.79 3 7v10c0 2.21 1.79 4 4 4h10c2.21 0 4-1.79 4-4V7c0-2.21-1.79-4-4-4H7zm10 2a2 2 0 012 2v10a2 2 0 01-2 2H7a2 2 0 01-2-2V7a2 2 0 012-2h10zm-5 2.5A5.5 5.5 0 1017.5 13 5.5 5.5 0 0012 7.5zm0 2A3.5 3.5 0 1115.5 13 3.5 3.5 0 0112 9.5zm5.75-3.25a1 1 0 10.75.29 1 1 0 00-.75-.29z"/></svg>
           </a>
+          <!-- Twitter/X -->
           <a href="#" aria-label="X" class="social">
             <svg viewBox="0 0 24 24"><path d="M18.9 3H22l-6.8 7.8L23 21h-6.4l-5-6.5L5.7 21H2.6l7.3-8.4L1 3h6.6l4.6 6L18.9 3zm-1.1 2.2-5.3 6.1L18 18.8h1.8L13 10l6-7.8h-1.2z"/></svg>
           </a>
+          <!-- LinkedIn -->
           <a href="#" aria-label="LinkedIn" class="social">
             <svg viewBox="0 0 24 24"><path d="M4.98 3.5A2.5 2.5 0 107.5 6 2.5 2.5 0 004.98 3.5zM3 8.98h4v12H3zM9.02 8.98h3.8v1.64h.06a4.18 4.18 0 013.76-2.06c4.02 0 4.76 2.65 4.76 6.1v6.32h-4v-5.6c0-1.34 0-3.06-1.86-3.06-1.87 0-2.16 1.46-2.16 2.96v5.7h-4z"/></svg>
           </a>

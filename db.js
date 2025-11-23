@@ -80,6 +80,30 @@ db.serialize(() => {
         "/image/usb.png",
         "Accessories"
       );
+      insert.run(
+  "Gaming Desk Setup",
+  "Minimalist desk organizer for clean setups",
+  99.99,
+  "/image/desk.png",
+  "Accessories"
+);
+
+insert.run(
+  "Pro Cable Kit",
+  "Premium braided USB-C + HDMI set",
+  24.99,
+  "/image/usb.png",
+  "Accessories"
+);
+
+insert.run(
+  "Studio Headphone Stand",
+  "Compact headphone holder for your desk",
+  19.99,
+  "/image/headphone.png",
+  "Accessories"
+);
+
 
       insert.finalize();
       console.log("Seed products inserted.");

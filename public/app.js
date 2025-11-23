@@ -1,14 +1,22 @@
 const API = "/api";
 let PRODUCTS = [];
 let CART = [];
+let WISHLIST = JSON.parse(localStorage.getItem("wishlist")) || [];
 
 const page = document.body.dataset.page;
 
-// helpers
 const qs = (sel) => document.querySelector(sel);
 const money = (v) => `€${Number(v).toFixed(2)}`;
+// Make brand always go home (works on any page)
+document.addEventListener("DOMContentLoaded", () => {
+  const brand = document.querySelector(".brand");
+  if (brand && !brand.onclick) {
+    brand.style.cursor = "pointer";
+    brand.addEventListener("click", () => location.href="index.html");
+  }
+});
 
-// load badge
+
 async function updateBadge() {
   const badge = qs("#cartBadge");
   if (!badge) return;
@@ -21,37 +29,90 @@ async function updateBadge() {
   badge.classList.toggle("hidden", totalQty === 0);
 }
 
-/* ---------------- HOME / PRODUCTS ---------------- */
+/* TOAST */
+function showToast(msg){
+  const t = document.getElementById("toast");
+  if (!t) return;
+  t.textContent = msg;
+  t.classList.remove("hidden");
+  t.classList.add("show");
+
+  setTimeout(() => {
+    t.classList.remove("show");
+    setTimeout(() => t.classList.add("hidden"), 300);
+  }, 2300);
+}
+
+/* FAVORITES */
+function toggleFav(id){
+  if (WISHLIST.includes(id)) {
+    WISHLIST = WISHLIST.filter(f => f !== id);
+    showToast("Removed from favorites ❤️");
+  } else {
+    WISHLIST.push(id);
+    showToast("Added to favorites ❤️");
+  }
+  localStorage.setItem("wishlist", JSON.stringify(WISHLIST));
+  renderProducts(PRODUCTS);
+  renderFeatured(PRODUCTS.slice(0,3));
+}
+
+/* HOME */
 async function loadProducts() {
+  const listWrap = qs("#product-list");
+  if (listWrap) {
+    listWrap.innerHTML = "<div class='card skeleton' style='height:260px;'></div>".repeat(6);
+  }
+
   const res = await fetch(`${API}/products`);
   PRODUCTS = await res.json();
 
+  renderFeatured(PRODUCTS.slice(0,3));
   renderCategories();
   renderProducts(PRODUCTS);
+  renderCarousel(PRODUCTS.slice(-4));
+}
+
+function productCard(p){
+  const isFav = WISHLIST.includes(p.id);
+  return `
+    <article class="card">
+      <button class="fav-btn" onclick="toggleFav(${p.id}); event.stopPropagation();">
+        ${isFav ? "❤️" : "🤍"}
+      </button>
+
+      <div class="clickable" onclick="openProduct(${p.id})">
+        <img src="${p.image}" alt="${p.name}">
+      </div>
+
+      <div class="card-body">
+        <div class="card-top clickable" onclick="openProduct(${p.id})">
+          <h3>${p.name}</h3>
+          <span class="cat">${p.category}</span>
+        </div>
+
+        <p class="desc">${p.description}</p>
+        <strong class="price">${money(p.price)}</strong>
+
+        <div class="card-actions">
+          <button class="btn outline" onclick="openProduct(${p.id})">View</button>
+          <button class="btn" onclick="addToCart(${p.id})">Add</button>
+        </div>
+      </div>
+    </article>
+  `;
+}
+
+function renderFeatured(list){
+  const wrap = qs("#featured-list");
+  if (!wrap) return;
+  wrap.innerHTML = list.map(productCard).join("");
 }
 
 function renderProducts(list) {
   const wrap = qs("#product-list");
   if (!wrap) return;
-
-  wrap.innerHTML = list.map(p => `
-    <article class="card">
-      <img src="${p.image}" alt="${p.name}">
-      <div class="card-body">
-        <div class="card-top">
-          <h3>${p.name}</h3>
-          <span class="cat">${p.category}</span>
-        </div>
-        <p class="desc">${p.description}</p>
-        <strong class="price">${money(p.price)}</strong>
-
-        <div class="card-actions">
-          <button class="btn outline" onclick="viewProduct(${p.id})">View</button>
-          <button class="btn" onclick="addToCart(${p.id})">Add</button>
-        </div>
-      </div>
-    </article>
-  `).join("");
+  wrap.innerHTML = list.map(productCard).join("");
 }
 
 function renderCategories() {
@@ -91,14 +152,15 @@ function attachSearchAndPriceUpdate() {
         ...p,
         price: +(p.price * (0.95 + Math.random() * 0.1)).toFixed(2)
       }));
+      renderFeatured(PRODUCTS.slice(0,3));
       renderProducts(PRODUCTS);
+      showToast("Prices updated ✅");
     });
   }
 }
 
-function viewProduct(id) {
-  const p = PRODUCTS.find(x => x.id === id);
-  alert(`${p.name}\n\n${p.description}\n\nPrice: ${money(p.price)}`);
+function openProduct(id){
+  location.href = `product.html?id=${id}`;
 }
 
 async function addToCart(id) {
@@ -108,9 +170,55 @@ async function addToCart(id) {
     body: JSON.stringify({ productId: id })
   });
   updateBadge();
+  showToast("Added to cart ✔");
 }
 
-/* ---------------- CART ---------------- */
+/* CAROUSEL */
+function renderCarousel(list){
+  const wrap = qs("#carousel");
+  if (!wrap) return;
+  wrap.innerHTML = list.map(p => `
+    <div class="carousel-item" onclick="openProduct(${p.id})">
+      <img src="${p.image}" style="width:100%;height:120px;object-fit:contain;background:#0c0e1a;border-radius:8px;">
+      <h4 style="margin-top:10px">${p.name}</h4>
+      <p class="muted">${money(p.price)}</p>
+    </div>
+  `).join("");
+}
+
+/* PRODUCT PAGE */
+async function loadProductPage(){
+  const params = new URLSearchParams(location.search);
+  const id = Number(params.get("id"));
+  const res = await fetch(`${API}/products`);
+  PRODUCTS = await res.json();
+  const p = PRODUCTS.find(x => x.id === id);
+
+  const wrap = qs("#productDetail");
+  if (!p){
+    wrap.innerHTML = "<p>Product not found.</p>";
+    wrap.classList.remove("skeleton");
+    return;
+  }
+
+  wrap.classList.remove("skeleton");
+  wrap.innerHTML = `
+    <img src="${p.image}" alt="${p.name}">
+    <div class="product-info">
+      <h2>${p.name}</h2>
+      <p>${p.description}</p>
+      <div class="price">${money(p.price)}</div>
+      <div class="stock">Stock available: ${p.stock ?? "In stock"}</div>
+
+      <div class="actions">
+        <button class="btn" onclick="addToCart(${p.id})">Add to cart</button>
+        <button class="btn outline" onclick="location.href='index.html'">Back to products</button>
+      </div>
+    </div>
+  `;
+}
+
+/* CART */
 async function loadCart() {
   const wrap = qs("#cart-list");
   if (!wrap) return;
@@ -171,23 +279,58 @@ async function removeItem(productId) {
   updateBadge();
 }
 
-/* ---------------- CHECKOUT ---------------- */
-function attachCheckout() {
-  const btn = qs("#confirmCheckoutBtn");
-  const box = qs("#checkoutSuccess");
-  if (!btn) return;
+/* CHECKOUT */
+async function loadCheckoutSummary(){
+  const res = await fetch(`${API}/cart`);
+  CART = await res.json();
 
-  btn.addEventListener("click", async () => {
+  const list = qs("#summaryList");
+  const totalEl = qs("#summaryTotal");
+  if (!list || !totalEl) return;
+
+  if (CART.length === 0){
+    list.innerHTML = "<p class='muted'>Your cart is empty.</p>";
+    totalEl.textContent = money(0);
+    return;
+  }
+
+  list.innerHTML = CART.map(i => `
+    <div class="summary-item">
+      <span>${i.name} x${i.qty}</span>
+      <span>${money(i.price * i.qty)}</span>
+    </div>
+  `).join("");
+
+  const total = CART.reduce((s,i)=> s + i.price*i.qty, 0);
+  totalEl.textContent = money(total);
+}
+
+function attachCheckoutForm(){
+  const form = qs("#checkoutForm");
+  if (!form) return;
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const fullName = qs("#fullName").value.trim();
+    const email = qs("#email").value.trim();
+    const phone = qs("#phone").value.trim();
+
+    if (!fullName || !email || !phone){
+      showToast("Fill all fields before confirming ❗");
+      return;
+    }
+
     await fetch(`${API}/cart`, { method: "DELETE" });
-    box.classList.remove("hidden");
 
-    setTimeout(() => {
-      location.href = "index.html";
-    }, 2500);
+    qs("#checkoutSuccess").classList.remove("hidden");
+    showToast("Order confirmed ✅");
+
+    setTimeout(() => location.href="index.html", 2200);
   });
 }
 
-/* ---------------- INIT ---------------- */
+/* INIT */
 (async function init(){
   await updateBadge();
 
@@ -196,11 +339,10 @@ function attachCheckout() {
     attachSearchAndPriceUpdate();
   }
 
-  if (page === "cart") {
-    await loadCart();
-  }
-
+  if (page === "cart") await loadCart();
   if (page === "checkout") {
-    attachCheckout();
+    await loadCheckoutSummary();
+    attachCheckoutForm();
   }
+  if (page === "product") await loadProductPage();
 })();
