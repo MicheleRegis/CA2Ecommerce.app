@@ -331,3 +331,19 @@ body{background:radial-gradient(1200px circle at top left,#171a33,transparent),
 .card{position:relative;}
 .clickable{cursor:pointer;}
 .small{font-size:12px;margin-top:6px;}
+
+/* LIGHTBOX / ZOOM */
+.lightbox{
+  position:fixed; inset:0;
+  background:rgba(0,0,0,.75);
+  display:none; place-items:center;
+  z-index:99999;
+}
+.lightbox.show{ display:grid; }
+.lightbox img{
+  max-width:90vw;
+  max-height:85vh;
+  border-radius:14px;
+  background:#0c0e1a;
+  padding:12px;
+}

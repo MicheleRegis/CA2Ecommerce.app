@@ -161,6 +161,8 @@ function attachSearchAndPriceUpdate() {
 
 function openProduct(id){
   location.href = `product.html?id=${id}`;
+  onclick="openProduct(${p.id})"
+
 }
 
 async function addToCart(id) {
@@ -187,36 +189,33 @@ function renderCarousel(list){
 }
 
 /* PRODUCT PAGE */
-async function loadProductPage(){
+function loadProductPage(){
   const params = new URLSearchParams(location.search);
-  const id = Number(params.get("id"));
-  const res = await fetch(`${API}/products`);
-  PRODUCTS = await res.json();
-  const p = PRODUCTS.find(x => x.id === id);
+  const id = parseInt(params.get("id"));
 
-  const wrap = qs("#productDetail");
-  if (!p){
-    wrap.innerHTML = "<p>Product not found.</p>";
-    wrap.classList.remove("skeleton");
-    return;
-  }
+  fetch(`/api/products/${id}`)
+    .then(res => res.json())
+    .then(p => {
+      const wrap = document.getElementById("productDetail");
+      wrap.classList.remove("skeleton");
 
-  wrap.classList.remove("skeleton");
-  wrap.innerHTML = `
-    <img src="${p.image}" alt="${p.name}">
-    <div class="product-info">
-      <h2>${p.name}</h2>
-      <p>${p.description}</p>
-      <div class="price">${money(p.price)}</div>
-      <div class="stock">Stock available: ${p.stock ?? "In stock"}</div>
+      wrap.innerHTML = `
+        <div class="product-left">
+          <img src="${p.image}" alt="${p.name}" onclick="openZoom('${p.image}')">
+        </div>
 
-      <div class="actions">
-        <button class="btn" onclick="addToCart(${p.id})">Add to cart</button>
-        <button class="btn outline" onclick="location.href='index.html'">Back to products</button>
-      </div>
-    </div>
-  `;
+        <div class="product-right">
+          <h2>${p.name}</h2>
+          <p class="desc">${p.description}</p>
+          <p class="price">€${p.price.toFixed(2)}</p>
+          <button class="btn main" onclick="addToCart(${p.id})">
+            Add to Cart
+          </button>
+        </div>
+      `;
+    });
 }
+
 
 /* CART */
 async function loadCart() {
@@ -346,3 +345,15 @@ function attachCheckoutForm(){
   }
   if (page === "product") await loadProductPage();
 })();
+
+function openZoom(src){
+  const box = document.getElementById("lightbox");
+  const img = document.getElementById("zoomImg");
+  if(!box || !img) return;
+  img.src = src;
+  box.classList.add("show");
+}
+function closeZoom(){
+  const box = document.getElementById("lightbox");
+  if(box) box.classList.remove("show");
+}

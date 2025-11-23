@@ -6,9 +6,10 @@
   <title>Product • Fynko</title>
   <link rel="stylesheet" href="styles.css"/>
 </head>
+
+<!-- IMPORTANTÍSSIMO: data-page="product" -->
 <body data-page="product">
 
-  <!-- Header -->
   <header class="topbar">
     <div class="brand" onclick="location.href='index.html'">
       <img src="/image/logo34.png" alt="Fynko Logo" class="logo-img"/>
@@ -28,10 +29,11 @@
   </header>
 
   <main class="container">
+    <!-- esse id tem que bater com app.js -->
     <div id="productDetail" class="product-detail skeleton" style="height:320px;"></div>
   </main>
 
-  <!-- Footer (MESMO DO INDEX) -->
+  <!-- Footer igual ao index -->
   <footer class="footer">
     <div class="footer-grid">
       <div>
@@ -85,3 +87,6 @@
   <script src="app.js"></script>
 </body>
 </html>
+<div id="lightbox" class="lightbox" onclick="closeZoom()">
+  <img id="zoomImg" src="" alt="Zoomed product">
+</div>
