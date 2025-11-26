@@ -6,8 +6,8 @@
 </p>
 
 <p align="center">
-  Desenvolvido por <strong>Michele Gonçalo Regis</strong><br/>
-  CCT College Dublin • Web Development CA2 • 2025
+  By <strong>Michele Gonçalo Regis</strong><br/>
+  CCT College Dublin • Web Development  • 2025
 </p>
 
 ---
