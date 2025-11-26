@@ -31,5 +31,5 @@ Express.js (2025) *Express Documentation*. Available at: https://expressjs.com/ 
 
 SQLite.org (2025) *About SQLite*. Available at: https://sqlite.org/about.html (Accessed: Nov 2025).
 
-GitHub Docs (2025) *Adding locally hosted code to GitHub*. Available at: https://docs.github.com/ (Accessed: Nov 2025). 
+GitHub (2025) *Adding locally hosted code to GitHub*. Available at: (https://github.com/MicheleRegis/CA2Ecommerce.app.git) (Accessed: Nov 2025). 
 
