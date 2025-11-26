@@ -357,6 +357,7 @@ This project was created for academic purposes as part of the **H.Dip. in Comput
 
 **Michele Gonçalo Regis**
 
+- 📧 Email: 2025006@student.cct.ie
 - GitHub: [@MicheleRegis](https://github.com/MicheleRegis)
 - Project: https://github.com/MicheleRegis/CA2Ecommerce.app.git
 
